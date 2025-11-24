@@ -1,0 +1,29 @@
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+
+# Docker volumes
+postgres-data/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Build artifacts
+target/
+dist/
+build/
+node_modules/
