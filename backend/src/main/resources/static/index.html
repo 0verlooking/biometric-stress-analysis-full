@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biometric Stress Analysis System</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Biometric Stress Analysis System</h1>
+            <p class="subtitle">Система аналізу біометричних показників стресу</p>
+        </header>
+
+        <main id="app">
+            <!-- Login Screen -->
+            <div id="login-screen" class="screen active">
+                <div class="card">
+                    <h2>Вхід в систему</h2>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" id="login-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="login-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                        <p class="text-center">
+                            Немає акаунту? <a href="#" onclick="showScreen('register-screen')">Зареєструватися</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Register Screen -->
+            <div id="register-screen" class="screen">
+                <div class="card">
+                    <h2>Реєстрація</h2>
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label>Username *</label>
+                            <input type="text" id="reg-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="reg-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password *</label>
+                            <input type="password" id="reg-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>First Name *</label>
+                            <input type="text" id="reg-firstname" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name *</label>
+                            <input type="text" id="reg-lastname" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="reg-gender">
+                                <option value="">Select</option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Register</button>
+                        <p class="text-center">
+                            Вже є акаунт? <a href="#" onclick="showScreen('login-screen')">Увійти</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Dashboard Screen -->
+            <div id="dashboard-screen" class="screen">
+                <div class="dashboard-header">
+                    <h2>Dashboard</h2>
+                    <button onclick="logout()" class="btn btn-secondary">Logout</button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-value" id="total-analyses">0</div>
+                        <div class="stat-label">Analyses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">❤️</div>
+                        <div class="stat-value" id="total-biometric">0</div>
+                        <div class="stat-label">Biometric Data</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-value" id="avg-stress">--</div>
+                        <div class="stat-label">Avg Stress</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Current Stress Level</h3>
+                    <div id="current-stress" class="stress-display">
+                        <p>No data available. Add biometric data to see analysis.</p>
+                    </div>
+                    <div class="button-group">
+                        <button onclick="showScreen('add-data-screen')" class="btn btn-primary">
+                            Add Biometric Data
+                        </button>
+                        <button onclick="showScreen('history-screen')" class="btn btn-secondary">
+                            View History
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Biometric Data Screen -->
+            <div id="add-data-screen" class="screen">
+                <div class="card">
+                    <h2>📋 Add Biometric Data</h2>
+                    <form id="biometric-form">
+                        <h3>Cardiovascular System</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Heart Rate (bpm) *</label>
+                                <input type="number" id="heart-rate" required>
+                                <small>Normal: 60-100 bpm</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Systolic Pressure (mmHg) *</label>
+                                <input type="number" id="systolic" required>
+                                <small>Normal: < 120 mmHg</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Diastolic Pressure (mmHg) *</label>
+                                <input type="number" id="diastolic" required>
+                                <small>Normal: < 80 mmHg</small>
+                            </div>
+                        </div>
+
+                        <h3>General</h3>
+                        <div class="form-group">
+                            <label>Body Temperature (°C) *</label>
+                            <input type="number" step="0.1" id="temperature" required>
+                            <small>Normal: 36.1-37.2 °C</small>
+                        </div>
+
+                        <h3>Sleep</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Sleep Hours</label>
+                                <input type="number" step="0.5" id="sleep-hours">
+                                <small>Recommended: 7-9 hours</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Sleep Quality</label>
+                                <select id="sleep-quality">
+                                    <option value="">Select</option>
+                                    <option value="POOR">Poor</option>
+                                    <option value="FAIR">Fair</option>
+                                    <option value="GOOD">Good</option>
+                                    <option value="EXCELLENT">Excellent</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h3>Optional</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Respiratory Rate (bpm)</label>
+                                <input type="number" id="respiratory-rate">
+                                <small>Normal: 12-20 bpm</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Oxygen Saturation (%)</label>
+                                <input type="number" step="0.1" id="oxygen">
+                                <small>Normal: 95-100%</small>
+                            </div>
+                        </div>
+
+                        <div class="button-group">
+                            <button type="button" onclick="showScreen('dashboard-screen')" class="btn btn-secondary">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                Save & Analyze
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Analysis Results Screen -->
+            <div id="results-screen" class="screen">
+                <div class="card">
+                    <h2>📊 Stress Analysis Results</h2>
+                    <div id="analysis-results"></div>
+                    <button onclick="showScreen('dashboard-screen')" class="btn btn-primary">
+                        Back to Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <!-- History Screen -->
+            <div id="history-screen" class="screen">
+                <div class="card">
+                    <h2>Analysis History</h2>
+                    <div id="history-list"></div>
+                    <button onclick="showScreen('dashboard-screen')" class="btn btn-secondary">
+                        Back to Dashboard
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 Biometric Stress Analysis System. All rights reserved.</p>
+            <p><a href="/swagger-ui.html" target="_blank">API Documentation</a></p>
+        </footer>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
