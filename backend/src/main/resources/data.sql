@@ -173,16 +173,3 @@ DO $$
 BEGIN
     RAISE NOTICE 'Тестові дані успішно завантажено!';
     RAISE NOTICE 'Користувачів: 5 (admin, doctor, john_doe, maria_smith, olena_koval)';
-    RAISE NOTICE 'Біометричних записів: 9';
-    RAISE NOTICE 'Аналізів стресу: 6';
-    RAISE NOTICE 'Рекомендацій: 12';
-    RAISE NOTICE '';
-    RAISE NOTICE '=== ОБЛІКОВІ ДАНІ ДЛЯ ВХОДУ ===';
-    RAISE NOTICE 'Всі користувачі мають пароль: password123';
-    RAISE NOTICE '';
-    RAISE NOTICE 'admin@biometric.com - Адміністратор';
-    RAISE NOTICE 'doctor@biometric.com - Лікар';
-    RAISE NOTICE 'john@example.com - Користувач (низький стрес)';
-    RAISE NOTICE 'maria@example.com - Користувач (помірний стрес)';
-    RAISE NOTICE 'olena@example.com - Користувач (високий стрес)';
-END $$;
