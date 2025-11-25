@@ -1,8 +1,8 @@
 package com.biometric.stressanalysis.config;
 
 import com.biometric.stressanalysis.entity.User;
-import com.biometric.stressanalysis.entity.enums.Gender;
-import com.biometric.stressanalysis.entity.enums.Role;
+import com.biometric.stressanalysis.entity.User.Gender;
+import com.biometric.stressanalysis.entity.User.Role;
 import com.biometric.stressanalysis.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
