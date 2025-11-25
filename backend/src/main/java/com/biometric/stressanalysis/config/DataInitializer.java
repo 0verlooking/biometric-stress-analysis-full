@@ -11,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * Initializes database with test users
@@ -144,9 +143,7 @@ public class DataInitializer implements CommandLineRunner {
                 .phoneNumber(phoneNumber)
                 .role(role)
                 .active(true)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+                .build(); // createdAt/updatedAt встановлюються автоматично Spring Data JPA
 
         userRepository.save(user);
         log.info("✓ Created user: {} ({})", username, email);
