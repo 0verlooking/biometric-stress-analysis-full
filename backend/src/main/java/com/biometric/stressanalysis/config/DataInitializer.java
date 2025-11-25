@@ -29,11 +29,8 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) {
         log.info("Starting data initialization...");
 
-        // Check if users already exist
-        if (userRepository.count() > 0) {
-            log.info("Users already exist in database, skipping initialization");
-            return;
-        }
+        // Don't skip if some users exist - check each user individually
+        log.info("Current user count: {}", userRepository.count());
 
         // Create admin user
         createUser(
@@ -107,13 +104,31 @@ public class DataInitializer implements CommandLineRunner {
                             LocalDate dateOfBirth, String phoneNumber, Role role) {
 
         // Check if user already exists by email or username
-        if (userRepository.findByEmail(email).isPresent()) {
-            log.info("User with email {} already exists, skipping", email);
+        User existingUser = userRepository.findByEmail(email).orElse(null);
+        if (existingUser != null) {
+            // Check if password is correct, if not - update it
+            if (!passwordEncoder.matches(plainPassword, existingUser.getPassword())) {
+                log.warn("⚠ User {} has incorrect password hash, updating...", email);
+                existingUser.setPassword(passwordEncoder.encode(plainPassword));
+                userRepository.save(existingUser);
+                log.info("✓ Updated password for user: {} ({})", username, email);
+            } else {
+                log.info("User with email {} already exists with correct password", email);
+            }
             return;
         }
 
-        if (userRepository.findByUsername(username).isPresent()) {
-            log.info("User with username {} already exists, skipping", username);
+        existingUser = userRepository.findByUsername(username).orElse(null);
+        if (existingUser != null) {
+            // Check if password is correct, if not - update it
+            if (!passwordEncoder.matches(plainPassword, existingUser.getPassword())) {
+                log.warn("⚠ User {} has incorrect password hash, updating...", username);
+                existingUser.setPassword(passwordEncoder.encode(plainPassword));
+                userRepository.save(existingUser);
+                log.info("✓ Updated password for user: {} ({})", username, email);
+            } else {
+                log.info("User with username {} already exists with correct password", username);
+            }
             return;
         }
 
