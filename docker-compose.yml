@@ -21,6 +21,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   # Backend Service (Java Spring Boot)
   backend:
@@ -36,6 +37,7 @@ services:
       SPRING_JPA_SHOW_SQL: "true"
       JWT_SECRET: biometric-stress-analysis-secret-key-change-in-production-2024
       JWT_EXPIRATION: 86400000
+      JAVA_OPTS: "-Xmx512m -Xms256m"
     ports:
       - "8080:8080"
     depends_on:
@@ -44,20 +46,21 @@ services:
     networks:
       - biometric-network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 60s
+      start_period: 90s
+    restart: unless-stopped
 
   # Frontend Service (React + Vite)
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:8080/api
     container_name: biometric-frontend
-    environment:
-      VITE_API_BASE_URL: http://localhost:8080/api
     ports:
       - "80:80"
     depends_on:
@@ -65,6 +68,7 @@ services:
         condition: service_healthy
     networks:
       - biometric-network
+    restart: unless-stopped
 
 networks:
   biometric-network:
