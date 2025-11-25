@@ -1,7 +1,9 @@
 package com.biometric.stressanalysis.controller;
 
 import com.biometric.stressanalysis.dto.BiometricDataDTO;
+import com.biometric.stressanalysis.dto.UserDTO;
 import com.biometric.stressanalysis.service.BiometricDataService;
+import com.biometric.stressanalysis.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -26,10 +30,25 @@ import java.util.List;
 public class BiometricDataController {
 
     private final BiometricDataService biometricDataService;
+    private final UserService userService;
 
     @PostMapping
     @Operation(summary = "Create new biometric data entry")
-    public ResponseEntity<BiometricDataDTO> createBiometricData(@Valid @RequestBody BiometricDataDTO dto) {
+    public ResponseEntity<BiometricDataDTO> createBiometricData(
+            @Valid @RequestBody BiometricDataDTO dto,
+            Authentication authentication) {
+
+        // Отримати username з JWT токену
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String username = userDetails.getUsername();
+
+        // Знайти користувача та отримати його ID
+        UserDTO user = userService.getUserByUsername(username)
+                .orElseThrow(() -> new IllegalStateException("User not found: " + username));
+
+        // Встановити userId в DTO
+        dto.setUserId(user.getId());
+
         BiometricDataDTO created = biometricDataService.createBiometricData(dto);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
