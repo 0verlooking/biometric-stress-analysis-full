@@ -102,32 +102,14 @@ public class DataInitializer implements CommandLineRunner {
                             String firstName, String lastName, Gender gender,
                             LocalDate dateOfBirth, String phoneNumber, Role role) {
 
-        // Check if user already exists by email or username
-        User existingUser = userRepository.findByEmail(email).orElse(null);
-        if (existingUser != null) {
-            // Check if password is correct, if not - update it
-            if (!passwordEncoder.matches(plainPassword, existingUser.getPassword())) {
-                log.warn("⚠ User {} has incorrect password hash, updating...", email);
-                existingUser.setPassword(passwordEncoder.encode(plainPassword));
-                userRepository.save(existingUser);
-                log.info("✓ Updated password for user: {} ({})", username, email);
-            } else {
-                log.info("User with email {} already exists with correct password", email);
-            }
+        // Skip if user already exists - DON'T try to update
+        if (userRepository.findByEmail(email).isPresent()) {
+            log.info("User with email {} already exists, skipping", email);
             return;
         }
 
-        existingUser = userRepository.findByUsername(username).orElse(null);
-        if (existingUser != null) {
-            // Check if password is correct, if not - update it
-            if (!passwordEncoder.matches(plainPassword, existingUser.getPassword())) {
-                log.warn("⚠ User {} has incorrect password hash, updating...", username);
-                existingUser.setPassword(passwordEncoder.encode(plainPassword));
-                userRepository.save(existingUser);
-                log.info("✓ Updated password for user: {} ({})", username, email);
-            } else {
-                log.info("User with username {} already exists with correct password", username);
-            }
+        if (userRepository.findByUsername(username).isPresent()) {
+            log.info("User with username {} already exists, skipping", username);
             return;
         }
 
