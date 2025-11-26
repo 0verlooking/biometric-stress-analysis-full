@@ -31,12 +31,14 @@ export interface User {
 }
 
 // Biometric Data types
-export enum SleepQuality {
-  POOR = 'POOR',
-  FAIR = 'FAIR',
-  GOOD = 'GOOD',
-  EXCELLENT = 'EXCELLENT'
-}
+export const SleepQuality = {
+  POOR: 'POOR',
+  FAIR: 'FAIR',
+  GOOD: 'GOOD',
+  EXCELLENT: 'EXCELLENT'
+} as const;
+
+export type SleepQualityType = typeof SleepQuality[keyof typeof SleepQuality];
 
 export interface BiometricData {
   id: number;
@@ -46,7 +48,7 @@ export interface BiometricData {
   diastolicPressure?: number;
   bodyTemperature?: number;
   cortisolLevel?: number;
-  sleepQuality?: SleepQuality;
+  sleepQuality?: SleepQualityType;
   sleepHours?: number;
   respiratoryRate?: number;
   oxygenSaturation?: number;
@@ -62,7 +64,7 @@ export interface BiometricDataRequest {
   diastolicPressure?: number;
   bodyTemperature?: number;
   cortisolLevel?: number;
-  sleepQuality?: SleepQuality;
+  sleepQuality?: SleepQualityType;
   sleepHours?: number;
   respiratoryRate?: number;
   oxygenSaturation?: number;
