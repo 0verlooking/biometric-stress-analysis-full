@@ -31,18 +31,18 @@ public class BiometricData extends BaseEntity {
     private LocalDateTime measurementTime;
 
     // Heart Rate (beats per minute)
-    @Column(nullable = false)
+    @Column
     private Integer heartRate;
 
     // Blood Pressure (systolic/diastolic in mmHg)
-    @Column(nullable = false)
+    @Column
     private Integer systolicPressure;
 
-    @Column(nullable = false)
+    @Column
     private Integer diastolicPressure;
 
     // Body Temperature (in Celsius)
-    @Column(nullable = false)
+    @Column
     private Double bodyTemperature;
 
     // Cortisol Level (stress hormone, in nmol/L)
