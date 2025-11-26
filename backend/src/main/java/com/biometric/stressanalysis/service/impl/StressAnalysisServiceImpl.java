@@ -1,5 +1,6 @@
 package com.biometric.stressanalysis.service.impl;
 
+import com.biometric.stressanalysis.dto.AverageStressScoreDTO;
 import com.biometric.stressanalysis.dto.RecommendationDTO;
 import com.biometric.stressanalysis.dto.StressAnalysisDTO;
 import com.biometric.stressanalysis.entity.BiometricData;
@@ -115,11 +116,30 @@ public class StressAnalysisServiceImpl implements StressAnalysisService {
         return stressAnalysisRepository.countByUserId(userId);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public AverageStressScoreDTO getAverageStressScoreData(Long userId) {
+        log.debug("Getting average stress score data for user ID: {}", userId);
+
+        // Get total count
+        Long totalAnalyses = stressAnalysisRepository.countByUserId(userId);
+
+        // Get average score (all time)
+        Double averageScore = stressAnalysisRepository.calculateAverageStressScore(
+                userId, LocalDateTime.of(2000, 1, 1, 0, 0));
+
+        return AverageStressScoreDTO.builder()
+                .userId(userId)
+                .averageScore(averageScore != null ? averageScore : 0.0)
+                .totalAnalyses(totalAnalyses)
+                .build();
+    }
+
     private StressAnalysisDTO convertToDTO(StressAnalysis analysis) {
-        List<RecommendationDTO> recommendationDTOs = null;
+        List<String> recommendationStrings = null;
         if (analysis.getRecommendations() != null) {
-            recommendationDTOs = analysis.getRecommendations().stream()
-                    .map(this::convertRecommendationToDTO)
+            recommendationStrings = analysis.getRecommendations().stream()
+                    .map(rec -> rec.getTitle() + ": " + rec.getDescription())
                     .collect(Collectors.toList());
         }
 
@@ -136,19 +156,7 @@ public class StressAnalysisServiceImpl implements StressAnalysisService {
                 .respiratoryScore(analysis.getRespiratoryScore())
                 .analysis(analysis.getAnalysis())
                 .createdAt(analysis.getCreatedAt())
-                .recommendations(recommendationDTOs)
-                .build();
-    }
-
-    private RecommendationDTO convertRecommendationToDTO(Recommendation recommendation) {
-        return RecommendationDTO.builder()
-                .id(recommendation.getId())
-                .stressAnalysisId(recommendation.getStressAnalysis().getId())
-                .category(recommendation.getCategory())
-                .title(recommendation.getTitle())
-                .description(recommendation.getDescription())
-                .priority(recommendation.getPriority())
-                .completed(recommendation.getCompleted())
+                .recommendations(recommendationStrings)
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.biometric.stressanalysis.service;
 
+import com.biometric.stressanalysis.dto.AverageStressScoreDTO;
 import com.biometric.stressanalysis.dto.StressAnalysisDTO;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,8 @@ public interface StressAnalysisService {
     );
 
     Double getAverageStressScore(Long userId, LocalDateTime startDate);
+
+    AverageStressScoreDTO getAverageStressScoreData(Long userId);
 
     void deleteStressAnalysis(Long id);
 

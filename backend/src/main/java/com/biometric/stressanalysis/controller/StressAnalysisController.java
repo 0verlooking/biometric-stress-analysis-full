@@ -1,5 +1,6 @@
 package com.biometric.stressanalysis.controller;
 
+import com.biometric.stressanalysis.dto.AverageStressScoreDTO;
 import com.biometric.stressanalysis.dto.StressAnalysisDTO;
 import com.biometric.stressanalysis.service.StressAnalysisService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -61,11 +62,9 @@ public class StressAnalysisController {
 
     @GetMapping("/user/{userId}/average-score")
     @Operation(summary = "Get average stress score for a user")
-    public ResponseEntity<Double> getAverageStressScore(
-            @PathVariable Long userId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate) {
-        Double average = stressAnalysisService.getAverageStressScore(userId, startDate);
-        return ResponseEntity.ok(average);
+    public ResponseEntity<AverageStressScoreDTO> getAverageStressScore(@PathVariable Long userId) {
+        AverageStressScoreDTO scoreData = stressAnalysisService.getAverageStressScoreData(userId);
+        return ResponseEntity.ok(scoreData);
     }
 
     @DeleteMapping("/{id}")

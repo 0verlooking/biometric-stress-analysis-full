@@ -26,5 +26,5 @@ public class StressAnalysisDTO {
     private Double respiratoryScore;
     private String analysis;
     private LocalDateTime createdAt;
-    private List<RecommendationDTO> recommendations;
+    private List<String> recommendations;  // Changed from List<RecommendationDTO> to List<String>
 }
