@@ -57,34 +57,42 @@ public class StandardStressAnalysisStrategy implements StressAnalysisStrategy {
 
     private double calculateCardiovascularScore(BiometricData data) {
         double score = 0.0;
-        int heartRate = data.getHeartRate();
-        int systolic = data.getSystolicPressure();
-        int diastolic = data.getDiastolicPressure();
 
         // Heart rate scoring (60-100 bpm is normal)
-        if (heartRate < 60) {
-            score += 10;
-        } else if (heartRate <= 100) {
-            score += 0;
-        } else if (heartRate <= 120) {
-            score += 30;
-        } else {
-            score += 60;
+        if (data.getHeartRate() != null) {
+            int heartRate = data.getHeartRate();
+            if (heartRate < 60) {
+                score += 10;
+            } else if (heartRate <= 100) {
+                score += 0;
+            } else if (heartRate <= 120) {
+                score += 30;
+            } else {
+                score += 60;
+            }
         }
 
         // Blood pressure scoring
-        if (systolic < 120 && diastolic < 80) {
-            score += 0;
-        } else if (systolic <= 139 || diastolic <= 89) {
-            score += 20;
-        } else {
-            score += 40;
+        if (data.getSystolicPressure() != null && data.getDiastolicPressure() != null) {
+            int systolic = data.getSystolicPressure();
+            int diastolic = data.getDiastolicPressure();
+            if (systolic < 120 && diastolic < 80) {
+                score += 0;
+            } else if (systolic <= 139 || diastolic <= 89) {
+                score += 20;
+            } else {
+                score += 40;
+            }
         }
 
         return Math.min(score, 100);
     }
 
     private double calculateThermalScore(BiometricData data) {
+        if (data.getBodyTemperature() == null) {
+            return 0;
+        }
+
         double temperature = data.getBodyTemperature();
 
         // Normal body temperature: 36.1 - 37.2°C
@@ -199,10 +207,10 @@ public class StandardStressAnalysisStrategy implements StressAnalysisStrategy {
         }
 
         // Add specific concerns
-        if (data.getHeartRate() > 100) {
+        if (data.getHeartRate() != null && data.getHeartRate() > 100) {
             analysis.append("Підвищений пульс. ");
         }
-        if (data.getSystolicPressure() > 140) {
+        if (data.getSystolicPressure() != null && data.getSystolicPressure() > 140) {
             analysis.append("Підвищений тиск. ");
         }
         if (data.getSleepHours() != null && data.getSleepHours() < 7) {
