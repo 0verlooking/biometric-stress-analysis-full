@@ -31,41 +31,43 @@ export interface User {
 }
 
 // Biometric Data types
-export const SleepQuality = {
-  POOR: 0,
-  FAIR: 1,
-  GOOD: 2,
-  EXCELLENT: 3
-} as const;
-
-export type SleepQualityType = typeof SleepQuality[keyof typeof SleepQuality];
+export enum SleepQuality {
+  POOR = 'POOR',
+  FAIR = 'FAIR',
+  GOOD = 'GOOD',
+  EXCELLENT = 'EXCELLENT'
+}
 
 export interface BiometricData {
   id: number;
   userId: number;
-  heartRate: number;
-  bloodPressureSystolic: number;
-  bloodPressureDiastolic: number;
-  temperature: number;
-  cortisol?: number;
-  adrenaline?: number;
-  sleepQuality?: SleepQualityType;
+  heartRate?: number;
+  systolicPressure?: number;
+  diastolicPressure?: number;
+  bodyTemperature?: number;
+  cortisolLevel?: number;
+  sleepQuality?: SleepQuality;
   sleepHours?: number;
   respiratoryRate?: number;
-  timestamp: string;
+  oxygenSaturation?: number;
+  activityLevel?: number;
+  notes?: string;
+  measurementTime: string;
 }
 
 export interface BiometricDataRequest {
   userId: number;
-  heartRate: number;
-  bloodPressureSystolic: number;
-  bloodPressureDiastolic: number;
-  temperature: number;
-  cortisol?: number;
-  adrenaline?: number;
-  sleepQuality?: SleepQualityType;
+  heartRate?: number;
+  systolicPressure?: number;
+  diastolicPressure?: number;
+  bodyTemperature?: number;
+  cortisolLevel?: number;
+  sleepQuality?: SleepQuality;
   sleepHours?: number;
   respiratoryRate?: number;
+  oxygenSaturation?: number;
+  activityLevel?: number;
+  notes?: string;
 }
 
 // Stress Analysis types

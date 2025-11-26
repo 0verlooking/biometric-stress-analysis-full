@@ -17,14 +17,16 @@ export const DashboardPage = () => {
   const [formData, setFormData] = useState<BiometricDataRequest>({
     userId: user?.id || 0,
     heartRate: 70,
-    bloodPressureSystolic: 120,
-    bloodPressureDiastolic: 80,
-    temperature: 36.6,
-    cortisol: undefined,
-    adrenaline: undefined,
+    systolicPressure: 120,
+    diastolicPressure: 80,
+    bodyTemperature: 36.6,
+    cortisolLevel: undefined,
     sleepQuality: undefined,
     sleepHours: undefined,
     respiratoryRate: undefined,
+    oxygenSaturation: undefined,
+    activityLevel: undefined,
+    notes: undefined,
   });
 
   useEffect(() => {
@@ -143,12 +145,12 @@ export const DashboardPage = () => {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="bloodPressureSystolic">Систолічний тиск *</label>
+                  <label htmlFor="systolicPressure">Систолічний тиск *</label>
                   <input
                     type="number"
-                    id="bloodPressureSystolic"
-                    name="bloodPressureSystolic"
-                    value={formData.bloodPressureSystolic || ''}
+                    id="systolicPressure"
+                    name="systolicPressure"
+                    value={formData.systolicPressure || ''}
                     onChange={handleChange}
                     required
                     min="70"
@@ -158,12 +160,12 @@ export const DashboardPage = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="bloodPressureDiastolic">Діастолічний тиск *</label>
+                  <label htmlFor="diastolicPressure">Діастолічний тиск *</label>
                   <input
                     type="number"
-                    id="bloodPressureDiastolic"
-                    name="bloodPressureDiastolic"
-                    value={formData.bloodPressureDiastolic || ''}
+                    id="diastolicPressure"
+                    name="diastolicPressure"
+                    value={formData.diastolicPressure || ''}
                     onChange={handleChange}
                     required
                     min="40"
@@ -178,12 +180,12 @@ export const DashboardPage = () => {
               <h3><Thermometer /> Температура тіла</h3>
 
               <div className="form-group">
-                <label htmlFor="temperature">Температура (°C) *</label>
+                <label htmlFor="bodyTemperature">Температура (°C) *</label>
                 <input
                   type="number"
-                  id="temperature"
-                  name="temperature"
-                  value={formData.temperature || ''}
+                  id="bodyTemperature"
+                  name="bodyTemperature"
+                  value={formData.bodyTemperature || ''}
                   onChange={handleChange}
                   required
                   min="35"
@@ -197,25 +199,12 @@ export const DashboardPage = () => {
               <h3><Droplets /> Біохімічні показники (опціонально)</h3>
 
               <div className="form-group">
-                <label htmlFor="cortisol">Кортизол (нмоль/л)</label>
+                <label htmlFor="cortisolLevel">Кортизол (нмоль/л)</label>
                 <input
                   type="number"
-                  id="cortisol"
-                  name="cortisol"
-                  value={formData.cortisol || ''}
-                  onChange={handleChange}
-                  min="0"
-                  step="0.1"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="adrenaline">Адреналін (пг/мл)</label>
-                <input
-                  type="number"
-                  id="adrenaline"
-                  name="adrenaline"
-                  value={formData.adrenaline || ''}
+                  id="cortisolLevel"
+                  name="cortisolLevel"
+                  value={formData.cortisolLevel || ''}
                   onChange={handleChange}
                   min="0"
                   step="0.1"
