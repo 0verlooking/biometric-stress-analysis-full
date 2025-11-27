@@ -137,6 +137,34 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
     }
 
+    @Override
+    public UserDTO changeUserPassword(Long userId, String newPassword) {
+        log.info("Admin changing password for user ID: {}", userId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user = userRepository.save(user);
+
+        log.info("Password changed successfully for user ID: {}", userId);
+        return convertToDTO(user);
+    }
+
+    @Override
+    public UserDTO toggleUserActiveStatus(Long userId) {
+        log.info("Toggling active status for user ID: {}", userId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+
+        user.setActive(!user.getActive());
+        user = userRepository.save(user);
+
+        log.info("User ID {} active status changed to: {}", userId, user.getActive());
+        return convertToDTO(user);
+    }
+
     private UserDTO convertToDTO(User user) {
         return UserDTO.builder()
                 .id(user.getId())

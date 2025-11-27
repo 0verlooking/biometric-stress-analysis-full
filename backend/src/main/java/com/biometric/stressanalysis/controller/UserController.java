@@ -1,10 +1,12 @@
 package com.biometric.stressanalysis.controller;
 
+import com.biometric.stressanalysis.dto.ChangePasswordRequest;
 import com.biometric.stressanalysis.dto.UserDTO;
 import com.biometric.stressanalysis.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -60,5 +62,23 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/password")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Change user password (Admin only)")
+    public ResponseEntity<UserDTO> changePassword(
+            @PathVariable Long id,
+            @Valid @RequestBody ChangePasswordRequest request) {
+        UserDTO updated = userService.changeUserPassword(id, request.getNewPassword());
+        return ResponseEntity.ok(updated);
+    }
+
+    @PutMapping("/{id}/toggle-active")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Toggle user active status (Admin only)")
+    public ResponseEntity<UserDTO> toggleActiveStatus(@PathVariable Long id) {
+        UserDTO updated = userService.toggleUserActiveStatus(id);
+        return ResponseEntity.ok(updated);
     }
 }

@@ -30,4 +30,9 @@ public interface UserService {
     boolean existsByEmail(String email);
 
     User getUserEntityById(Long id);
+
+    // Admin functions
+    UserDTO changeUserPassword(Long userId, String newPassword);
+
+    UserDTO toggleUserActiveStatus(Long userId);
 }
