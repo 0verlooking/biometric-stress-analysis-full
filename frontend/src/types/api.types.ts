@@ -18,6 +18,7 @@ export interface AuthResponse {
   id: number;
   username: string;
   email: string;
+  role: string;
 }
 
 // User types
@@ -27,6 +28,8 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  role: 'USER' | 'DOCTOR' | 'ADMIN';
+  active: boolean;
   createdAt: string;
 }
 
