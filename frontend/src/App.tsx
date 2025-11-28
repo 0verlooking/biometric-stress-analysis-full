@@ -7,6 +7,7 @@ import { RegisterPage } from './pages/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
+import { DoctorDashboardPage } from './pages/DoctorDashboardPage';
 import './App.css';
 
 function App() {
@@ -38,6 +39,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <AdminDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/doctor"
+              element={
+                <ProtectedRoute>
+                  <DoctorDashboardPage />
                 </ProtectedRoute>
               }
             />

@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Activity, Home, History, LogOut, User, Shield } from 'lucide-react';
+import { Activity, Home, History, LogOut, User, Shield, Stethoscope } from 'lucide-react';
 
 interface LayoutProps {
   children: ReactNode;
@@ -44,6 +44,16 @@ export const Layout = ({ children }: LayoutProps) => {
             <History size={20} />
             <span>Історія</span>
           </Link>
+
+          {user?.role === 'DOCTOR' && (
+            <Link
+              to="/doctor"
+              className={location.pathname === '/doctor' ? 'nav-link active' : 'nav-link'}
+            >
+              <Stethoscope size={20} />
+              <span>Панель лікаря</span>
+            </Link>
+          )}
 
           {user?.role === 'ADMIN' && (
             <Link
