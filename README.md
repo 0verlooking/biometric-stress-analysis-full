@@ -232,11 +232,28 @@ biometric-stress-analysis-full/
 - `GET /api/stress/latest/{userId}` - Останній аналіз користувача
 
 #### Користувачі
+- `GET /api/users` - Отримання всіх користувачів (Admin, Doctor)
 - `GET /api/users/{id}` - Отримання користувача за ID
+- `GET /api/users/username/{username}` - Отримання користувача за username
 - `PUT /api/users/{id}` - Оновлення профілю користувача
-- `DELETE /api/users/{id}` - Видалення користувача
+- `PUT /api/users/{id}/password` - Зміна пароля користувача (Admin)
+- `PUT /api/users/{id}/toggle-active` - Блокування/розблокування користувача (Admin)
+- `DELETE /api/users/{id}` - Видалення користувача (Admin)
+
+#### Аналітика
+- `GET /api/stress-analysis/user/{userId}/average-score` - Середній рівень стресу користувача
 
 Повна документація API доступна через Swagger UI: http://localhost:8080/swagger-ui.html
+
+### Тестові користувачі
+
+Система має три тестові користувачі з різними ролями:
+
+| Email | Password | Role | Username |
+|-------|----------|------|----------|
+| admin@biometric.com | password123 | ADMIN | admin |
+| doctor@biometric.com | password123 | DOCTOR | doctor |
+| john@example.com | password123 | USER | john |
 
 ## 🧪 Тестування
 

@@ -287,44 +287,291 @@ export const biometricService = {
 ```typescript
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Публічні маршрути */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+    <BrowserRouter>
+      <AuthProvider>
+        <Layout>
+          <Routes>
+            {/* Публічні маршрути */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
-          {/* Захищені маршрути */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Layout>
+            {/* Захищені маршрути - Користувач */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
                   <DashboardPage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/history"
-            element={
-              <ProtectedRoute>
-                <Layout>
+            <Route
+              path="/history"
+              element={
+                <ProtectedRoute>
                   <HistoryPage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Redirect */}
-          <Route path="/" element={<Navigate to="/dashboard" />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            {/* Захищені маршрути - Адміністратор */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Захищені маршрути - Лікар */}
+            <Route
+              path="/doctor"
+              element={
+                <ProtectedRoute>
+                  <DoctorDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Redirect */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </Layout>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 ```
+
+**Основні маршрути:**
+- `/login` - Сторінка входу (публічна)
+- `/register` - Сторінка реєстрації (публічна)
+- `/dashboard` - Головна панель користувача (захищена)
+- `/history` - Історія вимірювань (захищена)
+- `/admin` - Адмін-панель (захищена, тільки для ADMIN)
+- `/doctor` - Панель лікаря (захищена, тільки для DOCTOR)
+
+**Особливості:**
+- Всі маршрути обгорнуті в `Layout` компонент для єдиного навігаційного меню
+- `ProtectedRoute` перевіряє автентифікацію користувача
+- Layout відображає різні навігаційні пункти залежно від ролі користувача
+
+---
+
+## 6.5. Основні сторінки (Pages)
+
+### 6.5.1. AdminDashboardPage
+
+**Файл**: `frontend/src/pages/AdminDashboardPage.tsx`
+
+**Призначення**: Адміністративна панель для управління користувачами системи.
+
+**Основні функції:**
+
+1. **Статистичні картки**:
+   - Всього користувачів
+   - Активні користувачі
+   - Кількість адміністраторів
+   - Кількість лікарів
+
+2. **Таблиця користувачів**:
+   ```typescript
+   interface User {
+     id: number;
+     username: string;
+     email: string;
+     firstName: string;
+     lastName: string;
+     role: 'USER' | 'DOCTOR' | 'ADMIN';
+     active: boolean;
+     createdAt: string;
+   }
+   ```
+
+3. **Операції над користувачами**:
+   - **Зміна пароля**: Модальне вікно з валідацією
+   - **Блокування/Розблокування**: Toggle active status
+   - **Видалення**: З підтвердженням дії
+
+4. **Обмеження безпеки**:
+   - Адмін не може заблокувати самого себе
+   - Адмін не може видалити самого себе
+   - Всі операції з підтвердженням
+
+**Технічна реалізація:**
+
+```typescript
+const AdminDashboardPage = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+
+  // Redirect if not admin
+  useEffect(() => {
+    if (user && user.role !== 'ADMIN') {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
+
+  // CRUD операції
+  const loadUsers = async () => {
+    const data = await adminService.getAllUsers();
+    setUsers(data);
+  };
+
+  const handleChangePassword = async (newPassword: string) => {
+    await adminService.changeUserPassword(selectedUser.id, newPassword);
+    setShowPasswordModal(false);
+  };
+
+  const handleToggleActive = async (userId: number) => {
+    await adminService.toggleUserActive(userId);
+    await loadUsers();
+  };
+
+  const handleDeleteUser = async (userId: number) => {
+    if (confirm('Ви впевнені?')) {
+      await adminService.deleteUser(userId);
+      await loadUsers();
+    }
+  };
+
+  // Rendering...
+};
+```
+
+**API використання:**
+- `GET /api/users` - Отримання всіх користувачів
+- `PUT /api/users/{id}/password` - Зміна пароля
+- `PUT /api/users/{id}/toggle-active` - Блокування/розблокування
+- `DELETE /api/users/{id}` - Видалення користувача
+
+**CSS стилі**: Використовує градієнти, картки, таблиці з hover ефектами
+
+---
+
+### 6.5.2. DoctorDashboardPage
+
+**Файл**: `frontend/src/pages/DoctorDashboardPage.tsx`
+
+**Призначення**: Панель лікаря для моніторингу пацієнтів та їх стану стресу.
+
+**Основні функції:**
+
+1. **Статистика пацієнтів**:
+   - Всього пацієнтів (тільки роль USER)
+   - Активні пацієнти
+   - Середній рівень стресу обраного пацієнта
+   - Загальна кількість аналізів пацієнта
+
+2. **Список пацієнтів**:
+   - Фільтрація: тільки активні користувачі з роллю USER
+   - Відображення: ім'я, прізвище, email, username
+   - Інтерактивний вибір пацієнта
+
+3. **Детальна інформація про пацієнта**:
+   - Особисті дані
+   - Статистика стресу
+   - Візуальний індикатор з кольоровим кодуванням
+
+4. **Кольорове кодування рівня стресу**:
+   ```typescript
+   const getStressLevelColor = (score: number) => {
+     if (score < 25) return '#22c55e';  // Зелений - Низький
+     if (score < 50) return '#eab308';  // Жовтий - Помірний
+     if (score < 75) return '#f97316';  // Помаранжевий - Високий
+     return '#ef4444';                   // Червоний - Дуже високий
+   };
+   ```
+
+**Технічна реалізація:**
+
+```typescript
+const DoctorDashboardPage = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [patients, setPatients] = useState<User[]>([]);
+  const [selectedPatient, setSelectedPatient] = useState<User | null>(null);
+  const [patientStats, setPatientStats] = useState<AverageStressScore | null>(null);
+
+  // Redirect if not doctor
+  useEffect(() => {
+    if (user && user.role !== 'DOCTOR') {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
+
+  const loadPatients = async () => {
+    const allUsers = await adminService.getAllUsers();
+    // Фільтруємо тільки активних пацієнтів з роллю USER
+    const patientsList = allUsers.filter(u => u.role === 'USER' && u.active);
+    setPatients(patientsList);
+  };
+
+  const loadPatientStats = async (patientId: number) => {
+    const stats = await stressService.getAverageStressScore(patientId);
+    setPatientStats(stats);
+  };
+
+  const handlePatientClick = (patient: User) => {
+    setSelectedPatient(patient);
+    loadPatientStats(patient.id);
+  };
+
+  // Rendering...
+};
+```
+
+**API використання:**
+- `GET /api/users` - Отримання всіх користувачів (фільтрація на фронтенді)
+- `GET /api/stress-analysis/user/{userId}/average-score` - Статистика стресу
+
+**Візуальні особливості:**
+- Інтерактивні картки пацієнтів з hover ефектом
+- Виділення обраного пацієнта
+- Індикатор рівня стресу з градієнтним фоном
+- Адаптивний grid layout
+
+**Майбутні покращення:**
+- Детальна історія пацієнта (кнопка вже є)
+- Медичні примітки до профілю пацієнта
+- Графіки динаміки стресу
+
+---
+
+### 6.5.3. Навігаційне меню з ролями
+
+**Файл**: `frontend/src/components/Layout.tsx`
+
+Layout компонент відображає різні пункти меню залежно від ролі:
+
+```typescript
+{user?.role === 'DOCTOR' && (
+  <Link to="/doctor">
+    <Stethoscope size={20} />
+    <span>Панель лікаря</span>
+  </Link>
+)}
+
+{user?.role === 'ADMIN' && (
+  <Link to="/admin">
+    <Shield size={20} />
+    <span>Адмін-панель</span>
+  </Link>
+)}
+```
+
+**Іконки** (з Lucide React):
+- `Shield` - Адмін-панель
+- `Stethoscope` - Панель лікаря
+- `Home` - Головна
+- `History` - Історія
+- `User` - Профіль користувача
+- `LogOut` - Вихід
 
 ---
 
