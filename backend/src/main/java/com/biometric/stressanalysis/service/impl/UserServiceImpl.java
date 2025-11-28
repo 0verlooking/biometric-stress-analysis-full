@@ -99,6 +99,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<UserDTO> getUserByEmail(String email) {
+        log.debug("Getting user by email: {}", email);
+        return userRepository.findByEmail(email).map(this::convertToDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<UserDTO> getAllUsers() {
         log.debug("Getting all users");
         return userRepository.findAll().stream()

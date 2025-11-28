@@ -21,6 +21,8 @@ public interface UserService {
 
     Optional<UserDTO> getUserByUsername(String username);
 
+    Optional<UserDTO> getUserByEmail(String email);
+
     List<UserDTO> getAllUsers();
 
     void deleteUser(Long id);

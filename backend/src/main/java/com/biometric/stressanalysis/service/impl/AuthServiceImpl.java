@@ -79,11 +79,16 @@ public class AuthServiceImpl implements AuthService {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String token = jwtUtil.generateToken(userDetails);
 
-        // Get user details
-        UserDTO userDTO = userService.getUserByUsername(request.getUsername())
+        // Get user details - use the authenticated username from UserDetails, not from request
+        // UserDetails.getUsername() returns the actual username used for authentication (email or username)
+        String authenticatedUsername = userDetails.getUsername();
+
+        // Try to find user by the authenticated username (which could be email or username)
+        UserDTO userDTO = userService.getUserByUsername(authenticatedUsername)
+                .or(() -> userService.getUserByEmail(authenticatedUsername))
                 .orElseThrow(() -> new IllegalStateException("User not found after authentication"));
 
-        log.info("User logged in successfully: {}", request.getUsername());
+        log.info("User logged in successfully: {}", userDTO.getUsername());
 
         return AuthResponse.builder()
                 .token(token)
